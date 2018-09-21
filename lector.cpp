@@ -6,19 +6,20 @@
 #include <sys/shm.h>
 #include <iostream>
 #include <pthread.h>
-#include "Semaphore.h"
+#include <semaphore.h>
+#include <unistd.h>
 using namespace std;
 
-#define STRING_SIZE 1024 
+#define TOTAL_REGISTERS 1000
 struct Segmento{
     sem_t sem;
-    int num_orden[10];
-    int cantidad_productos[10];
-    double total_orden[10];
-    int dia[10];
-    int mes[10];
-    int ano[10];
-    char *nombre_cliente[10];
+    int num_orden[TOTAL_REGISTERS];
+    int cantidad_productos[TOTAL_REGISTERS];
+    double total_orden[TOTAL_REGISTERS];
+    int dia[TOTAL_REGISTERS];
+    int mes[TOTAL_REGISTERS];
+    int ano[TOTAL_REGISTERS];
+    char nombre_cliente[TOTAL_REGISTERS][50];
     
 };
     Segmento *data;
@@ -34,17 +35,25 @@ int main(int argc, char *argv[]){
         exit(1);
     }
     
-    // /* Crear el segmento */
-    // if ((shmid = shmget(key, SHM_SIZE, 0644)) == -1) {
-    //     perror("shmget");
-    //     exit(1);
-    // }
-
-    
     data = (Segmento *)shmat(shmid, NULL, 0);
     if (data == (Segmento *)(-1)) {
         perror("shmat");
         exit(1);
+    }
+
+    int i = 0;
+
+    sem_init(&(data->sem), 0, 1);
+    while(i < 10) {
+        sem_wait(&(data->sem));
+        
+        cout << "Nombre de la orden: "<< data->nombre_cliente[i] <<" Numero de Orden: "<<data->num_orden[i]<<" Dia de la orden: "<< data->dia[i]<<" Mes:"<< data->mes[i]<< " Año: "<<data->ano[i]<< " Cantidad de Productos: "<<data->cantidad_productos[i]<< " Cantidad de Productos: "<< data->cantidad_productos[i]<< " Total: "<< data->total_orden[i] << endl;
+        cout <<"*************************************************"<<endl;
+        
+        i++;
+
+        sem_post(&(data->sem));
+        sleep(2);
     }
     
 
@@ -67,3 +76,4 @@ int main(int argc, char *argv[]){
     }
     */
     return 0;
+}

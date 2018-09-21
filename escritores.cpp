@@ -11,16 +11,17 @@
 #include <unistd.h>
 using namespace std;
 
+#define TOTAL_REGISTERS 1000 
 #define STRING_SIZE 1024 
 struct Segmento{
     sem_t sem;
-    int num_orden[10];
-    int cantidad_productos[10];
-    double total_orden[10];
-    int dia[10];
-    int mes[10];
-    int ano[10];
-    char *nombre_cliente[10];
+    int num_orden[TOTAL_REGISTERS];
+    int cantidad_productos[TOTAL_REGISTERS];
+    double total_orden[TOTAL_REGISTERS];
+    int dia[TOTAL_REGISTERS];
+    int mes[TOTAL_REGISTERS];
+    int ano[TOTAL_REGISTERS];
+    char nombre_cliente[TOTAL_REGISTERS][50];
 
 };
 char cadena[STRING_SIZE];
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 {
     srand(time(NULL));
     char cadena[STRING_SIZE];
-    key_t key = 5649;
+    key_t key = 5646;
     int shmid;
     int mode;
     /* Crear el segmento */
@@ -46,17 +47,16 @@ int main(int argc, char *argv[])
     }
     
     int i=0;
-    char *nombres[10]={"Jordi","Oscar","Alexy","Juan","Andrea","Stephanie","Maria","Marcela","Andres","Gabriela"};
+    char nombres[10][50]={"Jordi","Oscar","Alexy","Juan","Andrea","Stephanie","Maria","Marcela","Andres","Gabriela"};
 
     sem_init(&(data->sem), 0, 1);
     //"Nombre del Cliente: "<<data->nombre_cliente[i]<<
-    while(true){
+    while(i < 10){
         sem_wait(&(data->sem));
         int opcion=  (rand() % 2) + 1;
         if(opcion==1){
             cout<<"Escribiendo Orden" <<endl;
                 //agregar numero de orden
-            i++;
             data->num_orden[i]=i;
                 //agregar mes
             int mes = (rand() % 12) + 1;
@@ -85,15 +85,18 @@ int main(int argc, char *argv[])
             data->total_orden[i]=total;
                 // agregar nombre del cliente        
             int nom=(rand() % 10) + 0;                
-            data->nombre_cliente[i]=(nombres[nom]);
+            
+            strcpy(data->nombre_cliente[i], (nombres[nom]));
             cout<<i<<endl;                 
             cout<<"Nombre del Cliente: "<<data->nombre_cliente[i]<<" Numero de Orden: "<<data->num_orden[i]<<" Dia de la orden: "<< data->dia[i]<<" Mes:"<< data->mes[i]<< " Año: "<<data->ano[i]<< " Cantidad de Productos: "<<data->cantidad_productos[i]<< " Cantidad de Productos: "<< data->cantidad_productos[i]<< " Total: "<< data->total_orden[i] << endl;
             cout<<"*************************************************"<<endl;
+
+            i++;
         }else{
             cout<<"Eliminar"<<endl;
         }
         sem_post(&(data->sem));
-        sleep(1);
+        sleep(6);
     }
     // for (int i = 0; i < 10; ++i)
     // {
