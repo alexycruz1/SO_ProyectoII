@@ -116,8 +116,8 @@ int main(int argc, char *argv[])
             cout<<"*************************************************"<<endl;
             cout << endl;
         }
-        sem_post(&(data->sem));
         sleep(1);
+        sem_post(&(data->sem));
     }
     return 0;
 }

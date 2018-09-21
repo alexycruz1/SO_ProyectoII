@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <map> 
 #include <iterator> 
+#include <time.h>
 
 using namespace std;
 
@@ -33,7 +34,6 @@ struct Segmento{
     Segmento *data;
     
 int main(int argc, char *argv[]){
-
     srand(time(NULL));
     
     key_t key = 5643;
@@ -57,6 +57,11 @@ int main(int argc, char *argv[]){
     sem_init(&(data->sem), 0, 1);
     sem_init(&(data->sem2), 0, 1);
     while(true) {
+        clock_t start, end;
+        double cpu_time_used;
+
+        start = clock();
+
         sem_wait(&(data->sem2));
         if((data->numLec == 0) || (data->numLec == 10)) {
             sem_wait(&(data->sem));
@@ -65,7 +70,7 @@ int main(int argc, char *argv[]){
         data->numLec++;
         sem_post(&(data->sem2));
         
-        int opcion =  (rand() % 4) + 1;
+        int opcion =  3;
         if(opcion == 1) {
             //Imprimir ordenes por año
             int regTempYear[data->i];
@@ -138,12 +143,18 @@ int main(int argc, char *argv[]){
         sem_wait(&(data->sem2));
         data->numLec--;
 
+        sleep(3);
+
         if((data->numLec == 0) || (data->numLec == 10)) {
             sem_post(&(data->sem));
         }
 
         sem_post(&(data->sem2));
-        sleep(1);
+        
+        end = clock();
+        cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+        cout <<"********************TIEMPO*****************************"<<endl;
+        cout << "El tiempo que paso fue: " << cpu_time_used << endl;
     }
     return 0;
 }
