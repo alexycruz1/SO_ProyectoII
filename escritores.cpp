@@ -15,6 +15,10 @@ using namespace std;
 #define STRING_SIZE 1024 
 struct Segmento{
     sem_t sem;
+    sem_t sem2;
+
+    int numLec = 0;
+
     int num_orden[TOTAL_REGISTERS];
     int cantidad_productos[TOTAL_REGISTERS];
     double total_orden[TOTAL_REGISTERS];
@@ -31,7 +35,7 @@ int main(int argc, char *argv[])
 {
     srand(time(NULL));
     char cadena[STRING_SIZE];
-    key_t key = 5644;
+    key_t key = 5643;
     int shmid;
     int mode;
     /* Crear el segmento */

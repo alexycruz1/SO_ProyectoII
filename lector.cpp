@@ -16,6 +16,10 @@ using namespace std;
 #define TOTAL_REGISTERS 1000
 struct Segmento{
     sem_t sem;
+    sem_t sem2;
+
+    int numLec = 0;
+
     int num_orden[TOTAL_REGISTERS];
     int cantidad_productos[TOTAL_REGISTERS];
     double total_orden[TOTAL_REGISTERS];
@@ -23,6 +27,7 @@ struct Segmento{
     int mes[TOTAL_REGISTERS];
     int ano[TOTAL_REGISTERS];
     char nombre_cliente[TOTAL_REGISTERS][50];
+
     int i = 0;
 };
     Segmento *data;
@@ -31,7 +36,7 @@ int main(int argc, char *argv[]){
 
     srand(time(NULL));
     
-    key_t key = 5644;
+    key_t key = 5643;
     int shmid;
     int mode;
     /* Crear el segmento */
@@ -50,8 +55,16 @@ int main(int argc, char *argv[]){
     char nombres[10][50]={"Jordi","Oscar","Alexy","Juan","Andrea","Stephanie","Maria","Marcela","Andres","Gabriela"};
 
     sem_init(&(data->sem), 0, 1);
+    sem_init(&(data->sem2), 0, 1);
     while(true) {
-        sem_wait(&(data->sem));
+        sem_wait(&(data->sem2));
+        if((data->numLec == 0) || (data->numLec == 10)) {
+            sem_wait(&(data->sem));
+        }
+
+        data->numLec++;
+        sem_post(&(data->sem2));
+        
         int opcion =  (rand() % 4) + 1;
         if(opcion == 1) {
             //Imprimir ordenes por año
@@ -122,7 +135,14 @@ int main(int argc, char *argv[]){
         }
         i++;
 
-        sem_post(&(data->sem));
+        sem_wait(&(data->sem2));
+        data->numLec--;
+
+        if((data->numLec == 0) || (data->numLec == 10)) {
+            sem_post(&(data->sem));
+        }
+
+        sem_post(&(data->sem2));
         sleep(1);
     }
     return 0;
