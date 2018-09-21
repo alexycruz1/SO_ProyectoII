@@ -8,6 +8,7 @@
 #include <vector>
 #include <semaphore.h>
 #include <time.h>
+#include <unistd.h>
 using namespace std;
 
 #define STRING_SIZE 1024 
@@ -37,9 +38,6 @@ int main(int argc, char *argv[])
         perror("shmget");
         exit(1);
     }
-    
-    
-    struct timespect ts;
     
     data = (Segmento *)shmat(shmid, NULL, 0);
     if (data == (Segmento *)(-1)) {
@@ -95,7 +93,7 @@ int main(int argc, char *argv[])
             cout<<"Eliminar"<<endl;
         }
         sem_post(&(data->sem));
-        sleep(100);
+        sleep(1);
     }
     // for (int i = 0; i < 10; ++i)
     // {
